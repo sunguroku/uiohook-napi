@@ -133,6 +133,10 @@ napi_value uiohook_to_js_event(napi_env env, uiohook_event* event) {
     status = napi_create_int32(env, event->data.wheel.rotation, &e_rotation);
     NAPI_FATAL_IF_FAILED(status, "uiohook_to_js_event", "napi_create_int32");
 
+    napi_value e_wheel_type;
+    status = napi_create_uint32(env, event->data.wheel.type, &e_wheel_type);
+    NAPI_FATAL_IF_FAILED(status, "uiohook_to_js_event", "napi_create_uint32");
+
     napi_property_descriptor descriptors[] = {
       { "type",      NULL, NULL, NULL, NULL, e_type,      napi_enumerable, NULL },
       { "time",      NULL, NULL, NULL, NULL, e_time,      napi_enumerable, NULL },
@@ -146,6 +150,7 @@ napi_value uiohook_to_js_event(napi_env env, uiohook_event* event) {
       { "amount",    NULL, NULL, NULL, NULL, e_amount,    napi_enumerable, NULL },
       { "direction", NULL, NULL, NULL, NULL, e_direction, napi_enumerable, NULL },
       { "rotation",  NULL, NULL, NULL, NULL, e_rotation,  napi_enumerable, NULL },
+      { "wheelType", NULL, NULL, NULL, NULL, e_wheel_type, napi_enumerable, NULL },
     };
     status = napi_define_properties(env, event_obj, sizeof(descriptors) / sizeof(descriptors[0]), descriptors);
     NAPI_FATAL_IF_FAILED(status, "uiohook_to_js_event", "napi_define_properties");
