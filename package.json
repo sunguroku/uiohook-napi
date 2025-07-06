@@ -1,8 +1,8 @@
 {
-  "name": "uiohook-napi",
+  "name": "postwork-uiohook-napi",
   "version": "1.5.4",
   "author": {
-    "name": "Alexander Drozdov"
+    "name": "Postwork"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "install": "node-gyp-build",
-    "prebuild": "prebuildify --napi",
+    "prebuild": "prebuildify --napi --strip",
+    "prebuild:all": "prebuildify --napi --strip --target 16.0.0 --target 18.0.0 --target 20.0.0",
     "build-ts": "tsc",
     "demo": "ts-node src/demo.ts",
     "make-libuiohook-patch": "git -C ./libuiohook diff --cached > ./src/libuiohook.patch",
