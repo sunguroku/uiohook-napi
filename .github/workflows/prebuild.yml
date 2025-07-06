@@ -1,4 +1,4 @@
-name: Prebuild
+name: Prebuild and Publish
 
 on:
   push:
@@ -35,3 +35,34 @@ jobs:
         with:
           name: prebuilds-${{ matrix.os }}
           path: prebuilds/
+
+  publish:
+    needs: prebuild
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: npm install
+      - name: Build TypeScript
+        run: npm run build-ts
+      - name: Download all prebuilds
+        uses: actions/download-artifact@v4
+        with:
+          path: prebuilds-temp/
+      - name: Organize prebuilds
+        run: |
+          mkdir -p prebuilds
+          cp -r prebuilds-temp/prebuilds-ubuntu-latest/* prebuilds/ 2>/dev/null || true
+          cp -r prebuilds-temp/prebuilds-windows-latest/* prebuilds/ 2>/dev/null || true
+          cp -r prebuilds-temp/prebuilds-macos-latest/* prebuilds/ 2>/dev/null || true
+          ls -la prebuilds/
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
